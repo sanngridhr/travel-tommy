@@ -42,14 +42,14 @@ else:
     class PlaceCreate(
         create_pydantic_model(
             table=PlaceTable,
-            exclude_columns=[PlaceTable.id, PlaceTable.project],
+            exclude_columns=[PlaceTable.id, PlaceTable.foreign_id, PlaceTable.project],
         )
     ): ...
 
     class PlaceCreateWithProject(
         create_pydantic_model(
             table=PlaceTable,
-            exclude_columns=[PlaceTable.id],
+            exclude_columns=[PlaceTable.id, PlaceTables.foreign_id],
         )
     ): ...
 
@@ -57,6 +57,6 @@ else:
         create_pydantic_model(
             table=PlaceTable,
             all_optional=True,
-            exclude_columns=[PlaceTable.id, PlaceTable.project],
+            exclude_columns=[PlaceTable.id, PlaceTable.foreign_id, PlaceTable.project],
         )
     ): ...
