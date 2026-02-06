@@ -1,15 +1,18 @@
-from typing import Annotated
+from app.api.v1.places.models import Place, PlaceCreate, PlaceCreateWithProject
+
+
+from typing import Annotated, Any
 from uuid import UUID
 from fastapi import APIRouter, Depends
 from starlette import status
 
+from app.api.v1.places.routes import PlacesServiceDependency
 from app.api.v1.projects.models import Project, ProjectCreate, ProjectUpdate
 from app.api.v1.projects.service import ProjectsService
 
 
-
-def _get_projects_service() -> ProjectsService:
-    return ProjectsService()
+def _get_projects_service(places_service: PlacesServiceDependency) -> ProjectsService:
+    return ProjectsService(places_service)
 
 
 ProjectsServiceDependency = Annotated[ProjectsService, Depends(dependency=_get_projects_service)]
@@ -22,7 +25,11 @@ async def list_projects(service: ProjectsServiceDependency) -> list[Project]:
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
-async def create_project(service: ProjectsServiceDependency, create: ProjectCreate) -> Project:
+async def create_project(
+    service: ProjectsServiceDependency,
+    places_service: PlacesServiceDependency,
+    create: ProjectCreate,
+) -> Project:
     return await service.create_project(create)
 
 
@@ -50,3 +57,15 @@ async def delete_project_by_id(
     id: UUID,
 ) -> None:
     return await service.delete_project_by_id(id)
+
+
+@router.post("/{id}/add-place")
+async def add_place_to_project(
+    places_service: PlacesServiceDependency,
+    id: UUID,
+    place_create: PlaceCreate
+) -> Place:
+    data: dict[str, Any] = place_create.model_dump()
+    data["project"] = id
+    place_create_with_project: PlaceCreateWithProject = PlaceCreateWithProject.model_validate(data)
+    return await places_service.create_place(create=place_create_with_project)

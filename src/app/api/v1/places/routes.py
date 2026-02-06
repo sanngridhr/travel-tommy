@@ -7,7 +7,6 @@ from app.api.v1.places.models import Place, PlaceCreate, PlaceUpdate
 from app.api.v1.places.service import PlacesService
 
 
-
 def _get_places_service() -> PlacesService:
     return PlacesService()
 
@@ -26,7 +25,7 @@ async def create_place(service: PlacesServiceDependency, create: PlaceCreate) ->
     return await service.create_place(create)
 
 
-@router.get( "/{id}")
+@router.get("/{id}")
 async def get_place_by_id(
     service: PlacesServiceDependency,
     id: UUID,

@@ -5,9 +5,9 @@ from piccolo.utils.pydantic import create_pydantic_model
 from pydantic import BaseModel, Field
 
 from app.database.tables import ProjectTable
+from app.api.v1.places.models import Place, PlaceCreate
 
 if TYPE_CHECKING:
-    from app.api.v1.places.models import Place
 
     class Project(BaseModel):
         id: UUID
@@ -22,14 +22,13 @@ if TYPE_CHECKING:
         description: str | None
         start_date: date | None
         is_locked = bool | None
-        places: list[Place] | None
+        places: list[PlaceCreate]
 
     class ProjectUpdate(BaseModel):
         name: str | None
         description: str | None
         start_date: date | None
         is_locked = bool | None
-        places: list[Place] | None
 else:
 
     class Project(
@@ -38,19 +37,20 @@ else:
             include_default_columns=True,
         )
     ):
-        places = list[Place] = Field(min_length=1, max_length=10)
+        places: list[Place] = Field(min_length=1, max_length=10)
 
     class ProjectCreate(
         create_pydantic_model(
             table=ProjectTable,
+            exclude_columns=[ProjectTable.id],
         )
     ):
-        places = list[Place] = Field(min_length=1, max_length=10)
+        places: list[PlaceCreate] = Field(min_length=1, max_length=10)
 
     class ProjectUpdate(
         create_pydantic_model(
             table=ProjectTable,
             all_optional=True,
+            exclude_columns=[ProjectTable.id],
         )
-    ):
-        places = list[Place] = Field(min_length=1, max_length=10) | None
+    ): ...

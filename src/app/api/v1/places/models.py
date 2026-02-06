@@ -6,50 +6,57 @@ from pydantic import BaseModel
 from app.database.tables import PlaceTable
 
 if TYPE_CHECKING:
-    from app.api.v1.projects.models import Project
 
     class Place(BaseModel):
         id: UUID
-        foreign_id: int
         title: str
         notes: str | None
         is_visited: bool
-        project: Project
+        project_id: UUID
 
     class PlaceCreate(BaseModel):
         title: str
         notes: str | None
         is_visited: bool
-        projects: Project
 
-    class PlaceUpdate(BaseModel):
-        foreign_id: int 
+    class PlaceCreateWithProject(BaseModel):
         title: str
         notes: str | None
         is_visited: bool
-        projects: Project
+        project: UUID
+
+    class PlaceUpdate(BaseModel):
+        title: str
+        notes: str | None
+        is_visited: bool
 else:
 
     class Place(
         create_pydantic_model(
             table=PlaceTable,
-            nested=True,
             include_default_columns=True,
+            exclude_columns=[PlaceTable.project],
         )
     ): ...
 
     class PlaceCreate(
         create_pydantic_model(
             table=PlaceTable,
-            nested=True,
+            exclude_columns=[PlaceTable.id, PlaceTable.project],
+        )
+    ): ...
+
+    class PlaceCreateWithProject(
+        create_pydantic_model(
+            table=PlaceTable,
+            exclude_columns=[PlaceTable.id],
         )
     ): ...
 
     class PlaceUpdate(
         create_pydantic_model(
             table=PlaceTable,
-            nested=True,
             all_optional=True,
+            exclude_columns=[PlaceTable.id, PlaceTable.project],
         )
-    ):
-        ...
+    ): ...
