@@ -2,7 +2,7 @@ from typing import Annotated
 from uuid import UUID
 from fastapi import APIRouter, Depends
 
-from app.api.v1.projects.schemas import Project, ProjectCreate, ProjectUpdate
+from app.api.v1.projects.models import Project, ProjectCreate, ProjectUpdate
 from app.api.v1.projects.service import ProjectsService
 
 PROJECTS_PATH = "/projects"
@@ -38,10 +38,9 @@ async def get_project_by_id(
 @router.patch(PROJECTS_PATH + "{project_id}")
 async def update_project_by_id(
     service: ProjectsServiceDependency,
-    id: UUID,
     update: ProjectUpdate,
 ) -> Project:
-    return await service.update_project_by_id(id, update)
+    return await service.update_project_by_id(update)
 
 
 @router.delete(PROJECTS_PATH + "{project_id}")
