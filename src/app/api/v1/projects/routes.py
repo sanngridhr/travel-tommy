@@ -1,52 +1,53 @@
 from typing import Annotated
 from uuid import UUID
 from fastapi import APIRouter, Depends
+from starlette import status
 
-from app.api.v1.projects.models import Project, ProjectCreate, ProjectUpdate
-from app.api.v1.projects.service import ProjectsService
+from app.api.v1.places.models import Place, PlaceCreate, PlaceUpdate
+from app.api.v1.places.service import PlacesService
 
-PROJECTS_PATH = "/projects"
+PLACES_PATH = "/places"
 router = APIRouter()
 
 
-def _get_projects_service() -> ProjectsService:
-    return ProjectsService()
+def _get_places_service() -> PlacesService:
+    return PlacesService()
 
 
-ProjectsServiceDependency = Annotated[ProjectsService, Depends(dependency=_get_projects_service)]
+PlacesServiceDependency = Annotated[PlacesService, Depends(dependency=_get_places_service)]
 
 
-@router.get(PROJECTS_PATH)
-async def list_projects(service: ProjectsServiceDependency) -> list[Project]:
-    return await service.list_projects()
+@router.get(PLACES_PATH)
+async def list_places(service: PlacesServiceDependency) -> list[Place]:
+    return await service.list_places()
 
 
-@router.post(PROJECTS_PATH)
-async def create_project(service: ProjectsServiceDependency, create: ProjectCreate) -> Project:
-    return await service.create_project(create)
+@router.post(PLACES_PATH, status_code=status.HTTP_201_CREATED)
+async def create_place(service: PlacesServiceDependency, create: PlaceCreate) -> Place:
+    return await service.create_place(create)
 
 
-@router.get(PROJECTS_PATH + "{project_id}")
-async def get_project_by_id(
-    service: ProjectsServiceDependency,
+@router.get(PLACES_PATH + "{id}")
+async def get_place_by_id(
+    service: PlacesServiceDependency,
     id: UUID,
-) -> Project:
-    return await service.get_project_by_id(id)
+) -> Place:
+    return await service.get_place_by_id(id)
 
 
-@router.put(PROJECTS_PATH + "{project_id}")
-@router.patch(PROJECTS_PATH + "{project_id}")
-async def update_project_by_id(
-    service: ProjectsServiceDependency,
+@router.put(PLACES_PATH + "{id}")
+@router.patch(PLACES_PATH + "{id}")
+async def update_place_by_id(
+    service: PlacesServiceDependency,
     id: UUID,
-    update: ProjectUpdate,
-) -> Project:
-    return await service.update_project_by_id(id, update)
+    update: PlaceUpdate,
+) -> Place:
+    return await service.update_place_by_id(id, update)
 
 
-@router.delete(PROJECTS_PATH + "{project_id}")
-async def delete_project_by_id(
-    service: ProjectsServiceDependency,
+@router.delete(PLACES_PATH + "{id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_place_by_id(
+    service: PlacesServiceDependency,
     id: UUID,
 ) -> None:
-    return await service.delete_project_by_id(id)
+    return await service.delete_place_by_id(id)

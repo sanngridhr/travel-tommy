@@ -5,7 +5,7 @@ from uuid import UUID
 
 from fastapi.exceptions import HTTPException
 from starlette import status
-from app.database.tables import PlaceTable, ProjectTable, ProjectToPlace
+from app.database.tables import PlaceTable, ProjectTable
 from models import Project, ProjectCreate, ProjectUpdate
 
 
@@ -42,10 +42,7 @@ class ProjectsService:
         ProjectTable.delete().where(ProjectTable.id == id)
 
     async def __check_project_lock_by_id(self, id: UUID) -> bool:
-        return await ProjectToPlace.exists().where(
-            (ProjectToPlace.project == id)
-            & (ProjectToPlace.place.is_in(PlaceTable.select(PlaceTable.id).where(PlaceTable.is_visited == True)))  # noqa: E712
-        )
+        return await PlaceTable.exists().where((PlaceTable.project == id) & (PlaceTable.is_visited == True))  # noqa: E712
 
     async def __fetch_project_by_id(self, id: UUID) -> ProjectTable:
         project: ProjectTable | None = await ProjectTable.objects().get(ProjectTable.id == id)
