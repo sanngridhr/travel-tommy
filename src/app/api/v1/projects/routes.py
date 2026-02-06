@@ -38,9 +38,10 @@ async def get_project_by_id(
 @router.patch(PROJECTS_PATH + "{project_id}")
 async def update_project_by_id(
     service: ProjectsServiceDependency,
+    id: UUID,
     update: ProjectUpdate,
 ) -> Project:
-    return await service.update_project_by_id(update)
+    return await service.update_project_by_id(id, update)
 
 
 @router.delete(PROJECTS_PATH + "{project_id}")
