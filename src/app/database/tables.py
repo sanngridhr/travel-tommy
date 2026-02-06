@@ -1,15 +1,21 @@
 from piccolo.table import Table
 from piccolo.columns import UUID, Boolean, Date, ForeignKey, Integer, OnDelete, Varchar
 
+from app.database.piccolo_conf import DB
 
-class ProjectTable(Table):
+
+class BaseTable(Table):
+    db = DB
+
+
+class ProjectTable(BaseTable):
     id = UUID(primary_key=True)
     name = Varchar(length=64, required=True)
     description = Varchar(null=True)
     start_date = Date(null=True)
 
 
-class PlaceTable(Table):
+class PlaceTable(BaseTable):
     id = UUID(primary_key=True)
     foreign_id = Integer(required=True)
     title = Varchar(length=64, required=True)

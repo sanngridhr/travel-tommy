@@ -6,7 +6,7 @@ from uuid import UUID
 from fastapi.exceptions import HTTPException
 from starlette import status
 from app.database.tables import PlaceTable, ProjectTable
-from models import Project, ProjectCreate, ProjectUpdate
+from app.api.v1.projects.models import Project, ProjectCreate, ProjectUpdate
 
 
 class ProjectsService:

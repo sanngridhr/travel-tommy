@@ -3,10 +3,10 @@ from uuid import UUID
 from piccolo.utils.pydantic import create_pydantic_model
 from pydantic import BaseModel
 
-from app.api.v1.projects.models import Project
 from app.database.tables import PlaceTable
 
 if TYPE_CHECKING:
+    from app.api.v1.projects.models import Project
 
     class Place(BaseModel):
         id: UUID
@@ -52,4 +52,4 @@ else:
             all_optional=True,
         )
     ):
-        id: UUID
+        ...
